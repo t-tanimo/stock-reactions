@@ -245,39 +245,13 @@
       setText(b.querySelector('.srx-btn__label'), label);
       if (b.title !== label) b.title = label;
     }
-    // 短縮表示のときにアイコンだけにするボタンへ目印を付け、名前をツールチップに残す
-    for (const el of box.children) {
-      const target = el.matches('.dropup') ? el.querySelector('.dropdown-toggle') : el;
-      if (!target || el.classList.contains('srx-btn')) continue;
-      const text = target.textContent.trim();
-      if (['返信', 'リアクション', '取り消す'].includes(text)) target.classList.add('srx-iconable');
-      if (ACK_LABELS.includes(text)) target.classList.add('srx-ack');
-      if (text && !target.title) target.title = text;
-    }
   }
 
-  // ボタン列が1段に入りきるまで段階的に短縮する（マウスを乗せて表示された時点で測る）
-  const COMPACT_STEPS = ['srx-c1', 'srx-c2', 'srx-c3'];
+  // ボタン列が一覧の表示枠の下に隠れる場合（一番下のメッセージなど）は、メッセージの内側に出す
   function fitToolBox(item) {
     const box = item.querySelector('.chatListItemToolBox');
     if (!box || !box.querySelector('.srx-btn') || !box.offsetWidth) return;
-    box.classList.remove(...COMPACT_STEPS, 'srx-up');
-    const limit = item.clientWidth - 20;
-    // ボタン列は右寄せで左へはみ出すため scrollWidth では測れない。ボタンの幅を合計する
-    const contentWidth = () => {
-      let w = 2; // 左右の枠線
-      for (const c of box.children) {
-        if (c.offsetParent === null) continue;
-        const cs = getComputedStyle(c);
-        w += c.getBoundingClientRect().width + parseFloat(cs.marginLeft) + parseFloat(cs.marginRight);
-      }
-      return w;
-    };
-    for (const step of COMPACT_STEPS) {
-      if (contentWidth() <= limit) break;
-      box.classList.add(step);
-    }
-    // 一覧の一番下のメッセージなどで、ボタン列が表示枠の外に隠れる場合はメッセージの内側に出す
+    box.classList.remove('srx-up');
     let scroller = item.parentElement;
     while (scroller && scroller !== document.body && !/(auto|scroll|hidden)/.test(getComputedStyle(scroller).overflowY)) scroller = scroller.parentElement;
     if (scroller && box.getBoundingClientRect().bottom > scroller.getBoundingClientRect().bottom) box.classList.add('srx-up');
