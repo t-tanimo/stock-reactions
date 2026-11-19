@@ -286,11 +286,19 @@
   let lastHovered = null;
   document.addEventListener('mouseover', (e) => {
     const item = e.target.closest && e.target.closest('.chatListItem[data-chat-id]');
-    if (item && item !== lastHovered) {
+    // メッセージの外から入ってきたときに毎回測り直す（スクロールで位置が変わっていることがあるため）
+    if (item && !(e.relatedTarget instanceof Node && item.contains(e.relatedTarget))) {
       lastHovered = item;
       fitToolBox(item);
     }
   });
+  document.addEventListener(
+    'scroll',
+    () => {
+      if (lastHovered && lastHovered.isConnected && lastHovered.matches(':hover')) fitToolBox(lastHovered);
+    },
+    true
+  );
 
   // メッセージ下の表示（「1人が了解しました」と同じ形式）
   function renderReactions(item) {
