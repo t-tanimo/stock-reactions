@@ -241,9 +241,56 @@
     }
     for (const b of btns) {
       const t = TYPES[b.dataset.srxType];
-      setText(b.querySelector('.srx-btn__label'), myReaction(item.dataset.chatId, b.dataset.srxType) ? t.undo : t.label);
+      const label = myReaction(item.dataset.chatId, b.dataset.srxType) ? t.undo : t.label;
+      setText(b.querySelector('.srx-btn__label'), label);
+      if (b.title !== label) b.title = label;
+    }
+    // 短縮表示のときにアイコンだけにするボタンへ目印を付け、名前をツールチップに残す
+    for (const el of box.children) {
+      const target = el.matches('.dropup') ? el.querySelector('.dropdown-toggle') : el;
+      if (!target || el.classList.contains('srx-btn')) continue;
+      const text = target.textContent.trim();
+      if (['返信', 'リアクション', '取り消す'].includes(text)) target.classList.add('srx-iconable');
+      if (ACK_LABELS.includes(text)) target.classList.add('srx-ack');
+      if (text && !target.title) target.title = text;
     }
   }
+
+  // ボタン列が1段に入りきるまで段階的に短縮する（マウスを乗せて表示された時点で測る）
+  const COMPACT_STEPS = ['srx-c1', 'srx-c2', 'srx-c3'];
+  function fitToolBox(item) {
+    const box = item.querySelector('.chatListItemToolBox');
+    if (!box || !box.querySelector('.srx-btn') || !box.offsetWidth) return;
+    box.classList.remove(...COMPACT_STEPS, 'srx-up');
+    const limit = item.clientWidth - 20;
+    // ボタン列は右寄せで左へはみ出すため scrollWidth では測れない。ボタンの幅を合計する
+    const contentWidth = () => {
+      let w = 2; // 左右の枠線
+      for (const c of box.children) {
+        if (c.offsetParent === null) continue;
+        const cs = getComputedStyle(c);
+        w += c.getBoundingClientRect().width + parseFloat(cs.marginLeft) + parseFloat(cs.marginRight);
+      }
+      return w;
+    };
+    for (const step of COMPACT_STEPS) {
+      if (contentWidth() <= limit) break;
+      box.classList.add(step);
+    }
+    // 一覧の一番下のメッセージなどで、ボタン列が表示枠の外に隠れる場合はメッセージの内側に出す
+    let scroller = item.parentElement;
+    while (scroller && scroller !== document.body && !/(auto|scroll|hidden)/.test(getComputedStyle(scroller).overflowY)) scroller = scroller.parentElement;
+    if (scroller && box.getBoundingClientRect().bottom > scroller.getBoundingClientRect().bottom) box.classList.add('srx-up');
+  }
+
+  let lastHovered = null;
+  document.addEventListener('mouseover', (e) => {
+    const item = e.target.closest && e.target.closest('.chatListItem[data-chat-id]');
+    if (item && item !== lastHovered) {
+      lastHovered = item;
+      fitToolBox(item);
+    }
+  });
 
   // メッセージ下の表示（「1人が了解しました」と同じ形式）
   function renderReactions(item) {
@@ -280,6 +327,7 @@
       renderReactions(item);
     }
     if (openPopover && !document.body.contains(openPopover.anchor)) closePopover();
+    if (lastHovered && lastHovered.isConnected) fitToolBox(lastHovered); // ラベルが変わったときに測り直す
   }
 
   // ---------- 押した人の一覧（Stock の「了解しました」と同じポップアップ） ----------

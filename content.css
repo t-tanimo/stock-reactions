@@ -3,20 +3,33 @@
   display: none !important;
 }
 
-/* ホバー時の操作ボタン: 「未読に戻す」は隠す。入りきらない場合は2段に折り返す */
+/*
+ * ホバー時の操作ボタン: 「未読に戻す」は隠し、常に1段で表示する。
+ * 入りきらないときは content.js が段階的に短縮表示にする（「タスクを作成」は常に文字付きで残す）
+ *   srx-c1: 🙏 / ✅ を絵文字だけにする
+ *   srx-c2: さらに「返信」「リアクション」をアイコンだけにする
+ *   srx-c3: さらに「了解しました」もアイコンだけにする
+ */
 .chatListItemToolBox .srx-hide {
   display: none !important;
 }
 .chatListItemToolBox:has(.srx-btn) {
-  flex-wrap: wrap !important;
-  justify-content: flex-end;
+  flex-wrap: nowrap !important;
   max-width: calc(100% - 20px);
-  /* 2段になったときにメッセージ本文に被らないよう、上端を固定して下へ伸ばす */
-  top: calc(100% - 2px);
-  bottom: auto !important;
 }
-.chatListItemToolBox:has(.srx-btn) .dropup .dropdown-menu {
-  white-space: nowrap;
+.chatListItemToolBox.srx-c1 .srx-btn .srx-btn__label,
+.chatListItemToolBox.srx-c2 .srx-iconable span,
+.chatListItemToolBox.srx-c3 .srx-ack span {
+  display: none;
+}
+.chatListItemToolBox.srx-c1 .srx-btn .srx-emoji {
+  margin-right: 0;
+}
+/* 表示枠の下に隠れる場合は、メッセージの内側（下端）に表示する */
+.chatListItemToolBox.srx-up {
+  bottom: 0 !important;
+  border-width: 1px;
+  border-radius: 3px;
 }
 .chatListItemToolBox .srx-btn .srx-emoji {
   margin-right: 2px;
