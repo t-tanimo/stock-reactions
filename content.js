@@ -309,12 +309,15 @@
     header.querySelector('strong').textContent = `${reactors.length}人`;
     header.append(`が${t.label}`);
     const ul = el.querySelector('ul');
+    // Stock の「了解しました」と同じチェックアイコンを流用（見つからなければ ✓）
+    const checkIcon = document.querySelector('.chatListItemToolBox svg.fa-check, .chatListItemReactionsContainer svg.fa-check');
     for (const m of list) {
       const li = document.createElement('li');
       li.className = 'chatMembersPopoverListItem';
       li.innerHTML =
         '<div class="chatMembersPopoverListItem__avatar"><div class="avatarBox"></div></div><p class="chatMembersPopoverListItem__name"></p>' +
         (m.checked ? '<div class="chatMembersPopoverListItem__chk"><span class="srx-check">✓</span></div>' : '');
+      if (m.checked && checkIcon) li.querySelector('.chatMembersPopoverListItem__chk').replaceChildren(checkIcon.cloneNode(true));
       if (m.avatar) li.querySelector('.avatarBox').style.backgroundImage = `url("${m.avatar.replace(/"/g, '%22')}")`;
       li.querySelector('.chatMembersPopoverListItem__name').textContent = m.name;
       ul.appendChild(li);
@@ -332,8 +335,8 @@
     left = Math.max(8, left);
     let top = a.top - h - 8;
     if (top < 8) top = a.bottom + 8;
-    el.style.left = `${left + window.scrollX}px`;
-    el.style.top = `${top + window.scrollY}px`;
+    el.style.setProperty('left', `${left + window.scrollX}px`, 'important');
+    el.style.setProperty('top', `${top + window.scrollY}px`, 'important');
     el.style.visibility = '';
     openPopover = { el, anchor };
   }

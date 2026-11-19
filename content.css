@@ -19,15 +19,16 @@
 }
 
 /* 押した人の一覧（Stock の一覧ポップアップのクラスを流用し、位置だけ指定） */
-.srx-popover {
-  position: absolute !important;
-  inset: auto !important;
-  transform: none !important;
-  margin: 0 !important;
+.popover.customPopoverMenu.srx-popover {
+  position: absolute;
+  width: 380px;
+  max-width: 380px;
+  height: 250px;
+  transform: none;
+  margin: 0;
   z-index: 2147483000;
 }
 .srx-popover .srx-check {
-  color: #2f80ed;
   font-weight: 700;
 }
 
