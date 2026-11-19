@@ -148,21 +148,27 @@
     const marker = itemById(markerId);
     const del = marker && [...marker.querySelectorAll('.chatListItemToolBox button')].find((b) => b.textContent.trim() === '削除');
     if (!del) return false;
+    // ダイアログは visibility で隠す（opacity を固定すると閉じるアニメーションが終わらず、
+    // 透明なダイアログが画面に残ってクリックできなくなるため）
     document.body.classList.add('srx-silent');
+    let ok = null;
     try {
       del.click();
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 30 && !ok; i++) {
         await sleep(50);
-        const ok = [...document.querySelectorAll('.modal button')].find(
+        ok = [...document.querySelectorAll('.modal button')].find(
           (b) => b.textContent.trim() === 'OK' && /削除してもよろしいですか/.test(b.closest('.modal').textContent)
         );
-        if (ok) {
-          ok.click();
-          await sleep(300);
-          return true;
-        }
       }
-      return false;
+      if (ok) ok.click();
+      // ダイアログが閉じきるまで待つ
+      for (let i = 0; i < 40 && document.querySelector('.modal, .modal-backdrop'); i++) await sleep(50);
+      // それでも残っていたら、閉じるアニメーションの終了を通知して片付ける
+      document.querySelectorAll('.modal, .modal-backdrop').forEach((m) => {
+        if (!m.classList.contains('show')) m.dispatchEvent(new TransitionEvent('transitionend', { bubbles: true, propertyName: 'opacity' }));
+      });
+      await sleep(100);
+      return !!ok;
     } finally {
       document.body.classList.remove('srx-silent');
     }
@@ -212,6 +218,10 @@
   function ensureButtons(item) {
     const box = item.querySelector('.chatListItemToolBox');
     if (!box) return;
+    // 「未読に戻す」は使わないので隠し、ボタン列の幅を空ける
+    for (const b of box.querySelectorAll(':scope > button:not(.srx-btn):not(.srx-hide)')) {
+      if (b.textContent.trim() === '未読に戻す') b.classList.add('srx-hide');
+    }
     let btns = box.querySelectorAll('.srx-btn');
     if (!btns.length) {
       const ack = [...box.children].find((b) => b.tagName === 'BUTTON' && ACK_LABELS.includes(b.textContent.trim()));

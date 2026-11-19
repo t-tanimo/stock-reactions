@@ -3,7 +3,21 @@
   display: none !important;
 }
 
-/* ホバー時の操作ボタン */
+/* ホバー時の操作ボタン: 「未読に戻す」は隠す。入りきらない場合は2段に折り返す */
+.chatListItemToolBox .srx-hide {
+  display: none !important;
+}
+.chatListItemToolBox:has(.srx-btn) {
+  flex-wrap: wrap !important;
+  justify-content: flex-end;
+  max-width: calc(100% - 20px);
+  /* 2段になったときにメッセージ本文に被らないよう、上端を固定して下へ伸ばす */
+  top: calc(100% - 2px);
+  bottom: auto !important;
+}
+.chatListItemToolBox:has(.srx-btn) .dropup .dropdown-menu {
+  white-space: nowrap;
+}
 .chatListItemToolBox .srx-btn .srx-emoji {
   margin-right: 2px;
   font-size: 11px;
@@ -35,7 +49,7 @@
 /* 取り消し時の削除確認ダイアログは見せない（自動で OK を押す） */
 body.srx-silent .modal,
 body.srx-silent .modal-backdrop {
-  opacity: 0 !important;
+  visibility: hidden !important;
 }
 
 /* トースト */
