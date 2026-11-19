@@ -1,0 +1,69 @@
+/* 専用メッセージ（リアクション用）は通常非表示 */
+.chatListItem.srx-marker:not(.srx-revealed) {
+  display: none !important;
+}
+.chatListItem.srx-marker.srx-revealed {
+  outline: 2px dashed #2f80ed;
+  outline-offset: -2px;
+}
+
+/* ホバー時のツールボタン */
+.chatListItemToolBox .srx-btn .srx-emoji {
+  margin-right: 2px;
+  font-size: 11px;
+}
+
+/* 元メッセージの下のバッジ */
+.srx-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.srx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border: 1px solid #d5dde8;
+  border-radius: 12px;
+  background: #fff;
+  color: #333;
+  font-size: 12px;
+  line-height: 18px;
+  cursor: pointer;
+}
+.srx-chip:hover {
+  border-color: #2f80ed;
+}
+.srx-chip--mine {
+  background: #e8f1fd;
+  border-color: #2f80ed;
+  color: #1a5fb4;
+}
+.srx-chip__count {
+  font-weight: 700;
+}
+
+/* トースト */
+#srx-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%) translateY(20px);
+  max-width: 480px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(30, 40, 60, 0.92);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.5;
+  z-index: 2147483647;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+#srx-toast.srx-toast--show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
