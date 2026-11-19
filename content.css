@@ -1,48 +1,40 @@
-/* 専用メッセージ（リアクション用）は通常非表示 */
-.chatListItem.srx-marker:not(.srx-revealed) {
+/* 専用メッセージ（リアクション用）は非表示 */
+.chatListItem.srx-marker {
   display: none !important;
 }
-.chatListItem.srx-marker.srx-revealed {
-  outline: 2px dashed #2f80ed;
-  outline-offset: -2px;
-}
 
-/* ホバー時のツールボタン */
+/* ホバー時の操作ボタン */
 .chatListItemToolBox .srx-btn .srx-emoji {
   margin-right: 2px;
   font-size: 11px;
 }
 
-/* 元メッセージの下のバッジ */
-.srx-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
-}
-.srx-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 9px;
-  border: 1px solid #d5dde8;
-  border-radius: 12px;
-  background: #fff;
-  color: #333;
+/* メッセージ下の「N人がありがとう」: 見た目は Stock の .chatListItemReactionsContainer をそのまま使う */
+.srx-reactions .chatListItemReactionsContainer__button .srx-emoji {
   font-size: 12px;
-  line-height: 18px;
+  line-height: 1;
+}
+.srx-reactions .chatListItemReactionsContainer__link {
   cursor: pointer;
 }
-.srx-chip:hover {
-  border-color: #2f80ed;
+
+/* 押した人の一覧（Stock の一覧ポップアップのクラスを流用し、位置だけ指定） */
+.srx-popover {
+  position: absolute !important;
+  inset: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  z-index: 2147483000;
 }
-.srx-chip--mine {
-  background: #e8f1fd;
-  border-color: #2f80ed;
-  color: #1a5fb4;
-}
-.srx-chip__count {
+.srx-popover .srx-check {
+  color: #2f80ed;
   font-weight: 700;
+}
+
+/* 取り消し時の削除確認ダイアログは見せない（自動で OK を押す） */
+body.srx-silent .modal,
+body.srx-silent .modal-backdrop {
+  opacity: 0 !important;
 }
 
 /* トースト */
